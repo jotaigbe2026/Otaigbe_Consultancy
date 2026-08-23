@@ -88,15 +88,40 @@ img {
     box-shadow: 0 4px 16px rgba(45, 140, 240, 0.35);
 }
 
+/* Default to the light-surface treatment. This button used to be white-on-
+   transparent because the only place it appeared was the dark hero; it now
+   appears on white cards far more often than on dark ones, where white text on
+   a white card is an invisible button. Dark containers opt back in below. */
 .btn-outline {
     background: transparent;
+    color: var(--primary);
+    border-color: var(--border);
+}
+
+.btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Dark surfaces: hero, interior page hero, the lead-magnet band and the
+   gradient CTA sections. Add any new dark container here as well. */
+.hero .btn-outline,
+.cta-section .btn-outline,
+.cta-band .btn-outline,
+.magnet .btn-outline,
+.aside-dark .btn-outline {
     color: #fff;
     border-color: rgba(255,255,255,0.4);
 }
 
-.btn-outline:hover {
+.hero .btn-outline:hover,
+.cta-section .btn-outline:hover,
+.cta-band .btn-outline:hover,
+.magnet .btn-outline:hover,
+.aside-dark .btn-outline:hover {
     background: rgba(255,255,255,0.1);
     border-color: #fff;
+    color: #fff;
 }
 
 .btn-nav {
@@ -1210,3 +1235,582 @@ button.btn-download {
         align-items: flex-start;
     }
 }
+
+
+/* =========================================================================
+   UNIFIED SITE — components added for the multi-page build.
+   Everything below reuses the :root custom properties above, so the palette
+   stays in one place. Ordered: navigation → interior pages → homepage
+   sections → forms.
+   ========================================================================= */
+
+/* ===== DROPDOWN NAVIGATION =====
+   The nav grew from six flat anchors to five topics with children, which is
+   what makes a service page reachable without going through the homepage.
+   Hover opens it on a pointer; a tap opens it on touch, where :hover would
+   otherwise latch on first tap and swallow the second. initNavDropdowns() in
+   lead-capture.js adds .open — every page loads that file, so the blog and
+   the service pages get the same menu without duplicating the handler. */
+.nav-links li.has-dropdown { position: relative; }
+
+.nav-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    padding: 0;
+}
+
+.nav-trigger::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform var(--transition);
+}
+
+.has-dropdown.open > .nav-trigger::after { transform: rotate(-135deg) translateY(-2px); }
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    min-width: 268px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 8px;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+    z-index: 200;
+}
+
+/* A gap between the trigger and the panel would close the menu as the pointer
+   crossed it, so the panel carries an invisible bridge instead of sitting flush. */
+.dropdown::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14px;
+    height: 14px;
+}
+
+.has-dropdown:hover > .dropdown,
+.has-dropdown.open > .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.dropdown li { display: block; }
+
+.dropdown a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.dropdown a:hover { background: var(--accent-light); color: var(--accent); }
+.dropdown a.active { color: var(--accent); font-weight: 600; }
+
+.dropdown .dropdown-note {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.dropdown a:hover .dropdown-note { color: var(--accent); }
+
+/* Mobile: the slide-in panel is a dark column, so the dropdown becomes an
+   accordion inside it rather than a floating white card off the screen edge. */
+@media (max-width: 768px) {
+    .nav-trigger {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 14px 0;
+        color: rgba(255,255,255,0.85);
+        font-size: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .dropdown {
+        position: static;
+        transform: none;
+        min-width: 0;
+        background: none;
+        border: 0;
+        box-shadow: none;
+        padding: 0 0 0 14px;
+        opacity: 1;
+        visibility: visible;
+        display: none;
+    }
+
+    .dropdown::before { content: none; }
+
+    /* Hover does not exist here, so only the tap-driven .open reveals it —
+       without this the panel would be permanently expanded. */
+    .has-dropdown:hover > .dropdown { display: none; }
+    .has-dropdown.open > .dropdown { display: block; transform: none; }
+
+    .dropdown a {
+        color: rgba(255,255,255,0.7) !important;
+        padding: 11px 0;
+        font-size: 0.92rem;
+    }
+
+    .dropdown a:hover { background: none; color: #fff !important; }
+    .dropdown .dropdown-note { display: none; }
+}
+
+/* ===== INTERIOR PAGE HERO =====
+   Service, about and contact pages open on a compact solid-navy band rather
+   than the homepage's full-height hero: the visitor arrived with a question,
+   not to be sold the brand a second time. */
+.page-hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    padding: 150px 0 72px;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-hero::after {
+    content: "";
+    position: absolute;
+    right: -140px;
+    top: -140px;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,140,240,0.25) 0%, transparent 68%);
+    pointer-events: none;
+}
+
+.page-hero-inner { max-width: 820px; position: relative; z-index: 1; }
+
+.page-hero h1 {
+    font-size: 2.9rem;
+    margin: 14px 0 18px;
+    letter-spacing: -0.02em;
+}
+
+.page-hero .lede {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.86);
+    max-width: 720px;
+}
+
+.page-hero .btn-outline {
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+}
+
+.page-hero .btn-outline:hover {
+    background: #fff;
+    border-color: #fff;
+    color: var(--primary-dark);
+}
+
+.page-hero-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+
+.breadcrumb {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.breadcrumb a { color: rgba(255,255,255,0.8); }
+.breadcrumb a:hover { color: #fff; }
+.breadcrumb span[aria-hidden] { opacity: 0.5; }
+
+/* ===== SERVICE PAGE LAYOUT =====
+   Long-form answer on the left, a CTA panel that follows the reader on the
+   right. The panel is sticky because these pages are long and the decision to
+   make contact is usually reached partway down, not at the end. */
+.svc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 64px;
+    align-items: start;
+}
+
+.svc-aside { position: sticky; top: 104px; display: grid; gap: 20px; }
+
+.aside-card {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px;
+}
+
+.aside-card h3 { font-size: 1.08rem; margin-bottom: 10px; }
+.aside-card p { font-size: 0.92rem; color: var(--text-light); margin-bottom: 18px; }
+
+.aside-card.aside-dark {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    border-color: transparent;
+    color: #fff;
+}
+
+.aside-card.aside-dark p { color: rgba(255,255,255,0.82); }
+
+.aside-list { list-style: none; display: grid; gap: 9px; }
+
+.aside-list a {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: block;
+    padding-left: 16px;
+    position: relative;
+}
+
+.aside-list a::before {
+    content: "\203A";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+.aside-list a:hover { color: var(--accent); }
+.aside-list a[aria-current="page"] { color: var(--primary); font-weight: 600; }
+
+/* ===== PROSE =====
+   Body copy for the service, about and guide pages. */
+.prose > * + * { margin-top: 20px; }
+.prose h2 { font-size: 1.75rem; margin-top: 52px; letter-spacing: -0.01em; }
+.prose h2:first-child { margin-top: 0; }
+.prose h3 { font-size: 1.18rem; margin-top: 34px; }
+.prose p { color: var(--text-light); }
+.prose strong { color: var(--text); }
+.prose ul, .prose ol { padding-left: 22px; color: var(--text-light); }
+.prose li + li { margin-top: 8px; }
+.prose ul li::marker { color: var(--accent); }
+.prose a:not(.btn) { color: var(--accent); font-weight: 500; }
+.prose a:not(.btn):hover { text-decoration: underline; }
+
+.prose .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 20px 24px;
+    color: var(--text);
+}
+
+.prose .callout p { color: var(--text); }
+.prose .callout > * + * { margin-top: 12px; }
+
+/* ===== TAG LIST =====
+   Material systems, process areas and industrial sectors. Chips rather than
+   prose because these are scanned for a match, not read. */
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; }
+
+.tag-list li {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 15px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* ===== FAQ ===== */
+.faq-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0 24px;
+    background: #fff;
+}
+
+.faq-item + .faq-item { margin-top: 12px; }
+
+.faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 20px 32px 20px 0;
+    font-weight: 600;
+    position: relative;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+    content: "+";
+    position: absolute;
+    right: 0;
+    top: 17px;
+    font-size: 1.45rem;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.faq-item[open] summary::after { content: "\2013"; }
+.faq-item > p, .faq-item > ul { color: var(--text-light); padding-bottom: 22px; }
+.faq-item > ul { padding-left: 22px; }
+
+/* ===== PROBLEM SECTION =====
+   The visitor self-identifies here before any service is named, which is why
+   it sits directly under the hero. */
+.problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.problem-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 24px 26px;
+}
+
+.problem-card h4 { font-size: 1.02rem; margin-bottom: 8px; }
+.problem-card p { font-size: 0.93rem; color: var(--text-light); }
+
+/* ===== PRINCIPAL / CREDIBILITY ===== */
+.principal-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+    padding: 10px 18px 10px 12px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.88);
+}
+
+.principal-line .pl-mark {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.cred-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.cred-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+}
+
+.cred-card strong { display: block; font-size: 0.98rem; margin-bottom: 5px; }
+.cred-card span { font-size: 0.88rem; color: var(--text-light); }
+
+.bio-layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+}
+
+.bio-card {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    position: sticky;
+    top: 104px;
+}
+
+.bio-card .bio-mark {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.bio-card h3 { font-size: 1.2rem; line-height: 1.35; }
+.bio-card .bio-post { font-size: 0.88rem; color: rgba(255,255,255,0.75); margin-top: 10px; }
+.bio-card .bio-letters { font-size: 0.82rem; color: var(--accent); font-weight: 600; margin-top: 4px; }
+
+.bio-card ul {
+    list-style: none;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.16);
+    display: grid;
+    gap: 11px;
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.82);
+}
+
+/* ===== WHY FLANEY ===== */
+.why-list { list-style: none; display: grid; gap: 16px; }
+
+.why-list li {
+    position: relative;
+    padding-left: 34px;
+    color: var(--text-light);
+}
+
+.why-list li::before {
+    content: "\2713";
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.why-list li strong { display: block; color: var(--text); }
+
+/* ===== LEAD MAGNET BAND ===== */
+.magnet {
+    background: var(--primary-dark);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 48px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 48px;
+    align-items: center;
+}
+
+.magnet h2 { font-size: 1.9rem; letter-spacing: -0.01em; }
+.magnet p { color: rgba(255,255,255,0.82); margin-top: 14px; }
+
+.magnet ul {
+    list-style: none;
+    margin-top: 22px;
+    display: grid;
+    gap: 10px;
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.82);
+}
+
+.magnet ul li::before { content: "\2014"; color: var(--accent); margin-right: 10px; }
+
+/* ===== AUDIENCE SPLIT (final CTA) =====
+   Manufacturers and attorneys arrive with different first questions, so the
+   closing call is two doors rather than one form. */
+.audience-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+
+.audience-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.audience-card .audience-tag {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.audience-card h3 { font-size: 1.3rem; margin: 10px 0 12px; }
+.audience-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 24px; flex: 1; }
+
+/* ===== INTAKE FORM NOTES ===== */
+.intake-note {
+    background: #fff8ec;
+    border: 1px solid #f0d9ae;
+    border-radius: var(--radius-sm);
+    padding: 15px 18px;
+    font-size: 0.85rem;
+    color: #7a5a1e;
+    margin-bottom: 20px;
+}
+
+.intake-note strong { color: #5c4315; }
+
+.contact-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+
+/* ===== RESPONSIVE (unified-site components) ===== */
+@media (max-width: 1024px) {
+    .svc-layout { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+    .svc-aside { position: static; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .bio-layout { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+    .bio-card { position: static; }
+    .magnet { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 40px; }
+}
+
+@media (max-width: 768px) {
+    .page-hero { padding: 120px 0 56px; }
+    .page-hero h1 { font-size: 2.1rem; }
+    .page-hero .lede { font-size: 1.02rem; }
+    .page-hero-cta .btn { width: 100%; }
+    .magnet { padding: 30px 24px; }
+    .magnet h2 { font-size: 1.55rem; }
+    .prose h2 { font-size: 1.45rem; margin-top: 40px; }
+    .contact-form .form-row { grid-template-columns: 1fr; }
+    .principal-line { align-items: flex-start; border-radius: var(--radius); }
+}
+
+/* Four process steps rather than three: the flex row needs tighter connectors
+   to stay inside the container, and a 2x2 grid below tablet width. */
+.process-steps.steps-4 .process-step { padding: 0 14px; max-width: 270px; }
+.process-steps.steps-4 .process-connector { width: 40px; }
+
+@media (max-width: 1024px) {
+    .process-steps.steps-4 { flex-wrap: wrap; gap: 32px 0; }
+    .process-steps.steps-4 .process-step { flex: 0 0 50%; max-width: 50%; }
+    .process-steps.steps-4 .process-connector { display: none; }
+}
+
+@media (max-width: 600px) {
+    .process-steps.steps-4 .process-step { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* The industry cards became links to the industries page — they were <div>s
+   with a heading and nothing to click, which is exactly the dead end the rest
+   of this rebuild removed. */
+a.industry-card { display: block; color: inherit; }
+a.industry-card:hover { border-color: var(--accent); }
+a.industry-card:hover h4 { color: var(--accent); }
+
+.blog-cta { margin-top: 40px; }

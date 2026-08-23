@@ -1,63 +1,17 @@
 /* Homepage behaviour.
  *
- * Email validation, the Formsubmit bridge and the gated PDF modal live in
- * lead-capture.js, which every page loads first — blog article pages need the
- * same gate and don't load this file.
+ * Three files load on the homepage, in this order:
+ *   lead-capture.js  email validation, the Formsubmit bridge, the gated PDF
+ *                    modal, and the nav dropdowns — everything shared with the
+ *                    blog and the service pages.
+ *   nav.js           navbar scroll state, the mobile drawer, anchor scrolling
+ *                    and the fade-in observer.
+ *   script.js        this file: the consultation form and the blog strip.
+ *
+ * The nav code used to live here. It moved to nav.js when the site grew past a
+ * single page; note that both files run in the same global scope, so anything
+ * re-declared here with `const` would be a SyntaxError, not a shadow.
  */
-
-// ===== NAVBAR =====
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-});
-
-// Mobile nav toggle
-const navToggle = document.getElementById('navToggle');
-const navLinks = document.getElementById('navLinks');
-
-navToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-});
-
-navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-    });
-});
-
-document.addEventListener('click', (e) => {
-    if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
-        navLinks.classList.remove('active');
-    }
-});
-
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const href = this.getAttribute('href');
-
-        // The logo is href="#", and querySelector('#') is a syntax error, so
-        // this threw on every logo click and the click did nothing at all —
-        // preventDefault had already run. A bare hash means "back to the top".
-        if (!href || href === '#') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-        }
-
-        const target = document.querySelector(href);
-        if (target) {
-            const offset = 80;
-            const top = target.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: 'smooth' });
-        }
-    });
-});
-
 
 // ===== SCHEDULED POSTS =====
 // Future-dated cards in the "latest from the blog" strip stay hidden until
@@ -65,14 +19,22 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 hideScheduledCards();
 
 
-// ===== CONTACT FORM SUBMISSION =====
+// ===== ENQUIRY FORM =====
+/* One handler for three forms: the homepage consultation form, contact.html
+ * and attorney-inquiry.html. They differ only in which fields they carry, which
+ * inbox they route to and what the subject line says, so those three things are
+ * declared on the <form> element rather than forked in here.
+ *
+ * data-inbox is a key into LEAD_INBOXES in lead-capture.js, not an address —
+ * an address in the markup could be edited into a redirect to somewhere else.
+ */
 const form = document.getElementById('contactForm');
 if (form) {
     // Set the _next redirect to current page
     const nextInput = form.querySelector('input[name="_next"]');
     if (nextInput) nextInput.value = window.location.href;
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         // Validate email first
@@ -92,15 +54,25 @@ if (form) {
         btn.textContent = 'Sending...';
         btn.disabled = true;
 
-        const formData = {
-            name: form.querySelector('[name="name"]').value.trim(),
-            email: emailInput.value.trim(),
-            company: form.querySelector('[name="company"]').value.trim(),
-            service: form.querySelector('[name="service"]').value,
-            message: form.querySelector('[name="message"]').value.trim()
+        const field = name => {
+            const el = form.querySelector('[name="' + name + '"]');
+            return el ? el.value.trim() : '';
         };
 
-        sendToFormsubmit(formData, 'New Consultation Request — Flaney Associates')
+        const formData = {
+            name: field('name'),
+            email: emailInput.value.trim(),
+            company: field('company'),
+            role: field('role'),
+            service: field('service'),
+            matter: field('matter'),
+            parties: field('parties'),
+            message: field('message')
+        };
+
+        sendToFormsubmit(formData,
+                         form.dataset.subject || 'New Enquiry — Flaney Associates',
+                         form.dataset.inbox)
             .then(res => {
                 if (res.ok) {
                     btn.textContent = 'Request Sent!';
@@ -129,27 +101,3 @@ if (form) {
 
     attachEmailValidation('contactEmail', 'contactEmailFeedback');
 }
-
-
-// ===== SCROLL ANIMATIONS =====
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-            observer.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
-
-document.querySelectorAll('.service-card, .expertise-card, .industry-card, .testimonial-card, .process-step, .blog-card').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
-});

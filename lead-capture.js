@@ -87,20 +87,37 @@ function attachEmailValidation(inputId, feedbackId) {
     });
 }
 
-// ===== SEND LEAD TO FORMSUBMIT (sends email to info@flaneyassociates.com) =====
-function sendToFormsubmit(data, subject) {
+// ===== SEND LEAD TO FORMSUBMIT =====
+/* Defaults to the general inbox. The attorney conflict-check form passes the
+ * principal's address instead: a conflict check names opposing parties, so it
+ * should reach one person rather than a shared mailbox. Any other value falls
+ * back to the default rather than being posted to an arbitrary address — the
+ * `to` argument is set by our own pages, and an allowlist keeps it that way
+ * even if a future page passes something unexpected.
+ */
+const LEAD_INBOXES = {
+    general: 'info@flaneyassociates.com',
+    principal: 'jotaigbe@flaneyassociates.com'
+};
+
+function sendToFormsubmit(data, subject, to) {
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('email', data.email);
     if (data.company) formData.append('company', data.company);
+    if (data.role) formData.append('role', data.role);
     if (data.service) formData.append('service', data.service);
+    if (data.matter) formData.append('matter_type', data.matter);
+    if (data.parties) formData.append('parties_involved', data.parties);
     if (data.message) formData.append('message', data.message);
     if (data.article) formData.append('article_downloaded', data.article);
     formData.append('_subject', subject);
     formData.append('_captcha', 'false');
     formData.append('_template', 'table');
 
-    return fetch('https://formsubmit.co/ajax/info@flaneyassociates.com', {
+    const inbox = LEAD_INBOXES[to] || LEAD_INBOXES.general;
+
+    return fetch('https://formsubmit.co/ajax/' + inbox, {
         method: 'POST',
         body: formData
     });
@@ -142,10 +159,35 @@ function triggerDownload(url) {
     let pendingPdfUrl = '';
     let pendingPdfTitle = '';
 
-    function openModal(pdfUrl, pdfTitle) {
+    /* The modal markup is identical on every page — the homepage, each article
+     * page and each generated page all carry the same block, and four
+     * generators would have to agree to change it. So the heading is adapted
+     * here instead, from optional data-modal-* attributes on the button that
+     * opened it. A download that is not an article ("Send Me the Checklist")
+     * would otherwise open a panel headed "Get Your Free Article".
+     */
+    const modalHeading = downloadModal.querySelector('h3');
+    const modalSubtitle = downloadModal.querySelector('.modal-subtitle');
+    const modalSubmit = downloadForm.querySelector('button[type="submit"]');
+    const MODAL_DEFAULTS = {
+        heading: modalHeading ? modalHeading.textContent : '',
+        subtitle: modalSubtitle ? modalSubtitle.textContent : '',
+        submit: modalSubmit ? modalSubmit.innerHTML : ''
+    };
+
+    function applyModalCopy(btn) {
+        const pick = (name, fallback) =>
+            (btn && btn.getAttribute('data-modal-' + name)) || fallback;
+        if (modalHeading) modalHeading.textContent = pick('heading', MODAL_DEFAULTS.heading);
+        if (modalSubtitle) modalSubtitle.textContent = pick('subtitle', MODAL_DEFAULTS.subtitle);
+        if (modalSubmit) modalSubmit.innerHTML = pick('submit', MODAL_DEFAULTS.submit);
+    }
+
+    function openModal(pdfUrl, pdfTitle, btn) {
         pendingPdfUrl = pdfUrl;
         pendingPdfTitle = pdfTitle;
         dlArticleInput.value = pdfTitle;
+        applyModalCopy(btn);
 
         const stored = getStoredLead();
         if (stored) {
@@ -218,7 +260,7 @@ function triggerDownload(url) {
                 return;
             }
 
-            openModal(pdfUrl, pdfTitle);
+            openModal(pdfUrl, pdfTitle, btn);
         });
     });
 
@@ -307,3 +349,61 @@ function hideScheduledCards(root) {
     });
     return hidden;
 }
+
+
+/* ===== NAVIGATION DROPDOWNS =====
+ * The site nav has children under How We Help, Industries, Insights, About and
+ * Contact. On a pointer device CSS :hover alone would do, but on touch the
+ * first tap latches :hover and the second tap is swallowed, so the parent is a
+ * <button> that toggles .open and the CSS honours either signal.
+ *
+ * This lives here rather than in script.js or blog.js because every page loads
+ * lead-capture.js first — the homepage, the service pages and every blog
+ * article — and one handler beats three that drift. Null-guarded like the rest
+ * of this file, so a page with no dropdowns is a no-op.
+ */
+function initNavDropdowns(root) {
+    const parents = (root || document).querySelectorAll('.has-dropdown');
+    if (!parents.length) return 0;
+
+    const closeAll = except => parents.forEach(p => {
+        if (p !== except) {
+            p.classList.remove('open');
+            const t = p.querySelector('.nav-trigger');
+            if (t) t.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    parents.forEach(parent => {
+        const trigger = parent.querySelector('.nav-trigger');
+        if (!trigger) return;
+        trigger.setAttribute('aria-expanded', 'false');
+
+        trigger.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            const open = !parent.classList.contains('open');
+            closeAll(parent);
+            parent.classList.toggle('open', open);
+            trigger.setAttribute('aria-expanded', String(open));
+        });
+
+        // Choosing a destination should not leave the menu hanging open behind
+        // the new page — which is visible on same-page anchor links.
+        parent.querySelectorAll('.dropdown a').forEach(a => {
+            a.addEventListener('click', () => closeAll(null));
+        });
+    });
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.has-dropdown')) closeAll(null);
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeAll(null);
+    });
+
+    return parents.length;
+}
+
+initNavDropdowns();

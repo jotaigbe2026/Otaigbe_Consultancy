@@ -305,12 +305,52 @@ def nav(depth=1, solid=False):
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="{up}index.html#services">Services</a></li>
-                <li><a href="{up}index.html#expertise">Expertise</a></li>
-                <li><a href="{up}index.html#industries">Industries</a></li>
-                <li><a href="{up}blog/index.html" class="active">Blog</a></li>
-                <li><a href="{up}index.html#about">About</a></li>
-                <li><a href="{up}index.html#contact" class="btn btn-nav">Get Started</a></li>
+                <li class="has-dropdown">
+                    <button type="button" class="nav-trigger">How We Help</button>
+                    <ul class="dropdown">
+                        <li><a href="{up}services/failure-analysis.html">Failure &amp; Root-Cause Analysis<span class="dropdown-note">Why it failed, and what is defensible</span></a></li>
+                        <li><a href="{up}services/materials-selection.html">Materials Selection &amp; Qualification<span class="dropdown-note">Choosing and validating a material</span></a></li>
+                        <li><a href="{up}services/product-development.html">Product Development &amp; Materials Innovation<span class="dropdown-note">Concept through production</span></a></li>
+                        <li><a href="{up}services/process-optimization.html">Manufacturing Process Optimization<span class="dropdown-note">Yield, quality, throughput</span></a></li>
+                        <li><a href="{up}services/technical-due-diligence.html">Technical Due Diligence &amp; R&amp;D Strategy<span class="dropdown-note">Technology and investment decisions</span></a></li>
+                        <li><a href="{up}services/expert-witness.html">Expert Witness &amp; Litigation Support<span class="dropdown-note">Product liability, IP, technical disputes</span></a></li>
+                    </ul>
+                </li>
+                <li class="has-dropdown">
+                    <button type="button" class="nav-trigger">Industries</button>
+                    <ul class="dropdown">
+                        <li><a href="{up}industries.html#polymers-plastics">Polymers &amp; Plastics</a></li>
+                        <li><a href="{up}industries.html#composites">Composites</a></li>
+                        <li><a href="{up}industries.html#manufacturing">Manufacturing &amp; Processing</a></li>
+                        <li><a href="{up}industries.html#consumer-products">Consumer Products</a></li>
+                        <li><a href="{up}industries.html#automotive">Automotive &amp; Transportation</a></li>
+                        <li><a href="{up}industries.html#energy">Energy &amp; Oil/Gas</a></li>
+                    </ul>
+                </li>
+                <li class="has-dropdown">
+                    <button type="button" class="nav-trigger">Insights</button>
+                    <ul class="dropdown">
+                        <li><a href="{up}blog/index.html" class="active">Blog<span class="dropdown-note">Articles on materials and manufacturing</span></a></li>
+                        <li><a href="{up}guides.html">Guides &amp; Briefings<span class="dropdown-note">Checklists and sector briefings</span></a></li>
+                    </ul>
+                </li>
+                <li class="has-dropdown">
+                    <button type="button" class="nav-trigger">About</button>
+                    <ul class="dropdown">
+                        <li><a href="{up}about.html">Professor Joshua U. Otaigbe</a></li>
+                        <li><a href="{up}about.html#credentials">Credentials</a></li>
+                        <li><a href="{up}about.html#approach">Approach</a></li>
+                        <li><a href="{up}about.html#faqs">FAQs</a></li>
+                    </ul>
+                </li>
+                <li class="has-dropdown">
+                    <button type="button" class="nav-trigger">Contact</button>
+                    <ul class="dropdown">
+                        <li><a href="{up}contact.html">Discuss Your Challenge<span class="dropdown-note">Manufacturers and product teams</span></a></li>
+                        <li><a href="{up}attorney-inquiry.html">Attorney Conflict Check<span class="dropdown-note">Confidential, no case details</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="{up}contact.html" class="btn btn-nav">Discuss Your Challenge</a></li>
             </ul>
         </div>
     </nav>""".format(up=up, cls=cls)
@@ -326,7 +366,7 @@ def footer(depth=1):
                         <span class="logo-icon">&#9670;</span>
                         Flaney<span class="logo-accent">Associates</span>
                     </a>
-                    <p>Expert materials engineering firm. Helping you build better products through advanced materials science and innovation.</p>
+                    <p>Independent materials-science and engineering expertise for manufacturers, product teams and attorneys. Led by Professor Joshua U. Otaigbe, PhD, CEng, FIMMM, CSci, FAEng, FSPE.</p>
                     <div class="footer-social">
                         <a href="https://www.linkedin.com/in/joshua-otaigbe-ceng-fimmm-faeng-22751322" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -337,35 +377,38 @@ def footer(depth=1):
                     </div>
                 </div>
                 <div class="footer-links">
-                    <h4>Services</h4>
+                    <h4>How We Help</h4>
                     <ul>
-                        <li><a href="{up}index.html#services">Materials Selection</a></li>
-                        <li><a href="{up}index.html#services">Failure Analysis</a></li>
-                        <li><a href="{up}index.html#services">Process Optimization</a></li>
-                        <li><a href="{up}index.html#services">R&amp;D Consulting</a></li>
+                        <li><a href="{up}services/failure-analysis.html">Failure &amp; Root-Cause Analysis</a></li>
+                        <li><a href="{up}services/materials-selection.html">Materials Selection &amp; Qualification</a></li>
+                        <li><a href="{up}services/product-development.html">Product Development &amp; Materials Innovation</a></li>
+                        <li><a href="{up}services/process-optimization.html">Manufacturing Process Optimization</a></li>
+                        <li><a href="{up}services/technical-due-diligence.html">Technical Due Diligence &amp; R&amp;D Strategy</a></li>
+                        <li><a href="{up}services/expert-witness.html">Expert Witness &amp; Litigation Support</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
                     <h4>Company</h4>
                     <ul>
-                        <li><a href="{up}index.html#about">About Us</a></li>
-                        <li><a href="{up}index.html#expertise">Expertise</a></li>
-                        <li><a href="{up}index.html#industries">Industries</a></li>
+                        <li><a href="{up}about.html">About Professor Joshua U. Otaigbe</a></li>
+                        <li><a href="{up}about.html#credentials">Credentials</a></li>
+                        <li><a href="{up}industries.html">Industries</a></li>
                         <li><a href="{up}blog/index.html">Blog</a></li>
-                        <li><a href="{up}index.html#testimonials">Testimonials</a></li>
+                        <li><a href="{up}guides.html">Guides &amp; Briefings</a></li>
                     </ul>
                 </div>
                 <div class="footer-links">
                     <h4>Contact</h4>
                     <ul>
+                        <li><a href="{up}contact.html">Discuss Your Challenge</a></li>
+                        <li><a href="{up}attorney-inquiry.html">Attorney Conflict Check</a></li>
                         <li><a href="mailto:info@flaneyassociates.com">info@flaneyassociates.com</a></li>
                         <li><a href="tel:+16014027282">+1 (601) 402-7282</a></li>
-                        <li><a href="{up}index.html#contact">Schedule a Call</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Flaney Associates. All rights reserved.</p>
+                <p>&copy; 2026 Flaney Associates, LLC. All rights reserved.</p>
             </div>
         </div>
     </footer>""".format(up=up)
@@ -567,8 +610,8 @@ def build_index(posts):
     <section class="section cta-band">
         <div class="container">
             <h2>Have a materials challenge of your own?</h2>
-            <p>Talk through your polymer, composite or failure-analysis problem with us — the first consultation is free.</p>
-            <a href="../index.html#contact" class="btn btn-primary btn-lg">Schedule a Free Consultation</a>
+            <p>Describe what is happening, what it is costing and what decision is waiting on it. You speak with the principal directly.</p>
+            <a href="../contact.html" class="btn btn-primary btn-lg">Discuss Your Challenge</a>
         </div>
     </section>
 
@@ -694,9 +737,9 @@ def build_post(p, posts):
     html += """
     <section class="section cta-band">
         <div class="container">
-            <h2>Need expert input on a materials problem?</h2>
-            <p>We help manufacturers and innovators solve complex materials challenges — from polymer processing to failure analysis.</p>
-            <a href="../index.html#contact" class="btn btn-primary btn-lg">Schedule a Free Consultation</a>
+            <h2>Need independent input on a materials problem?</h2>
+            <p>Failure and root-cause analysis, materials selection, process optimization and expert-witness work — led by Professor Joshua U. Otaigbe, PhD, CEng, FIMMM, CSci, FAEng, FSPE.</p>
+            <a href="../contact.html" class="btn btn-primary btn-lg">Discuss Your Challenge</a>
         </div>
     </section>
 
@@ -713,17 +756,39 @@ BEGIN = "            <!-- BEGIN imported-blog (generated by generate_blog.py —
 END = "            <!-- END imported-blog -->"
 
 
-def update_homepage(posts, n=6):
-    """Inject a 'latest from the blog' strip into index.html's #blog section.
+# Posts kept off the homepage. The blog covers materials engineering, board
+# governance and general-interest science, and all three belong in the archive
+# — but the homepage has one job, which is to tell a visitor with an expensive
+# materials problem that they are in the right place. A wellness article or a
+# general boardroom-AI piece in that strip works against it.
+#
+# New posts are featured by default; this list names the exceptions. Keep it in
+# step with HOMEPAGE_EXCLUDE in publisher/lib/template.js.
+HOMEPAGE_EXCLUDE = {
+    "unlocking-the-healing-power-of-cassava-leaves-simple-extraction-methods-for-everyday-wellness",
+    "boardgpt-using-ai-in-the-boardroom",
+    "empowering-smarter-corporate-boards-with-ai",
+    "how-ai-is-transforming-scientific-research",
+}
 
-    The strip sits above the site's existing hand-written blog cards, which are
-    left untouched. Re-running the generator replaces only the marked block, so
-    this is safe to run repeatedly.
+
+def featured(posts, n=6):
+    """The posts that appear in the homepage strip, newest first."""
+    return [p for p in posts
+            if not p["gated"] and p["slug"] not in HOMEPAGE_EXCLUDE][:n]
+
+
+def update_homepage(posts, n=6):
+    """Inject the insights strip into index.html's #blog section.
+
+    Re-running the generator replaces only the marked block, so this is safe to
+    run repeatedly. The twelve sector briefings that used to sit below this
+    strip now live on guides.html; the block no longer emits a heading for them.
     """
     path = os.path.join(ROOT, "index.html")
     page = open(path).read()
 
-    latest = [p for p in posts if not p["gated"]][:n]
+    latest = featured(posts, n)
     block = [BEGIN,
              '            <div class="blog-subhead">',
              '                <h3>Latest from the Flaney Associates blog</h3>',
@@ -733,12 +798,7 @@ def update_homepage(posts, n=6):
              '            <div class="post-grid">']
     for p in latest:
         block.append(card(p, prefix="blog/").rstrip("\n"))
-    block += ["            </div>",
-              '            <hr class="blog-divider">',
-              '            <div class="blog-subhead">',
-              "                <h3>Sector briefings</h3>",
-              "            </div>",
-              END]
+    block += ["            </div>", END]
     block = "\n".join(block) + "\n"
 
     if BEGIN in page:
