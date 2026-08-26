@@ -1668,7 +1668,12 @@ button.btn-download {
     top: 104px;
 }
 
-.bio-card .bio-mark {
+/* Geometry belongs on .bio-mark itself, not on `.bio-card .bio-mark`. Scoping
+   it to the bio card meant the expert-witness rail — same markup, but inside
+   .aside-card — inherited no width, height or radius, so the absolutely
+   positioned portrait stretched to the full column at one line-height and
+   rendered as a letterboxed strip instead of a face. */
+.bio-mark {
     width: 62px;
     height: 62px;
     border-radius: 50%;
@@ -1950,6 +1955,17 @@ a.featured-tag:hover { text-decoration: underline; }
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
+}
+
+/* The rail card is centre-aligned, but text-align does not centre a
+   fixed-width block — it needs auto margins. Larger here than the 62px used
+   elsewhere: counsel is reading this card to judge how he presents, and a
+   face at 62px is a thumbnail rather than a portrait. */
+.aside-card .bio-mark {
+    width: 116px;
+    height: 116px;
+    font-size: 2.1rem;
+    margin: 0 auto 6px;
 }
 
 .bio-mark img,

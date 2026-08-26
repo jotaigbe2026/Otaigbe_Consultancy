@@ -181,6 +181,8 @@ It appears in three places, all through `headshot()` in `generate_pages.py`: the
 Two details worth keeping:
 
 - **The monogram is still in the markup, behind the image.** `onerror="this.remove()"` deletes a broken `<img>` so the card falls back to the "JO" circle it used before the photo existed, rather than to a broken-image icon.
+- **The circle geometry is on `.bio-mark` itself, not `.bio-card .bio-mark`.** It was scoped to the bio card originally, which broke the moment the same markup was reused in the expert-witness rail: with no width, height or radius inherited, the absolutely positioned portrait stretched to the full column at one line-height and rendered as a letterboxed strip. **If you reuse `.bio-mark` anywhere new, check it renders — do not assume the class carries its own geometry until you have looked at it.**
+- **`.aside-card .bio-mark` is 116px and centred with auto margins.** `text-align: center` on the card does not centre a fixed-width block, which is the other half of why the rail looked wrong.
 - **`object-position` is `center 20%`, not centre.** The source is a 4:5 head-and-shoulders portrait; centring the square crop cuts the top of his head off. 20% was chosen by rendering 0/10/20/30/50% side by side and comparing — reproduce that with PIL against `images/joshua-otaigbe.jpg` if the photo is ever replaced.
 
 **The photo is dated.** EXIF says 3 October 2019, and his appearance has changed since. It was accepted as the best of the two available: the alternative was current but in black tie, at 800x533, on a saturated green background that clashes with the navy palette. Replacing it is a single file drop at the same path — no code change.
