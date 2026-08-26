@@ -38,8 +38,29 @@ PHONE_PRINCIPAL_TEL = "+16014518452"
 LINKEDIN = ("https://www.linkedin.com/in/"
             "joshua-otaigbe-ceng-fimmm-faeng-22751322")
 
-PRINCIPAL = "Professor Joshua U. Otaigbe"
-LETTERS = "PhD, CEng, FIMMM, CSci, FAEng, FSPE"
+# Two forms of the name, deliberately.
+#
+# An academic title answers "what is he"; a role title answers "what will he do
+# for me". Manufacturers buy the second, and to a buyer deciding whether this
+# practice can take their problem this quarter, "Professor ... Emeritus" reads
+# as retired. So client-facing chrome — nav, footers, service pages, the
+# homepage hero — leads with the role.
+#
+# Attorneys are the opposite case: under FRE 702 the qualifications are
+# litigated, and academic rank is an admissibility asset. The full academic
+# framing therefore stays on about.html and the expert-witness page, where the
+# reader is looking for exactly that.
+#
+# The short postnominal set stops at three. Past that they read as insecurity
+# rather than authority, and few buyers can decode CSci, FAEng or FSPE. CEng
+# and FIMMM are the two that earn their place: CEng says licensed and
+# accountable to a professional body rather than merely educated, and FIMMM is
+# peer-elected and specific to materials.
+PRINCIPAL = "Joshua U. Otaigbe"                  # client-facing
+PRINCIPAL_ACADEMIC = "Professor Joshua U. Otaigbe"   # about + expert witness
+ROLE = "Principal, Flaney Associates"
+LETTERS = "PhD, CEng, FIMMM"                     # client-facing
+LETTERS_FULL = "PhD, CEng, FIMMM, CSci, FAEng, FSPE"  # credentials in full
 
 CHECKLIST_PDF = "articles/materials-failure-cost-checklist.pdf"
 CHECKLIST_TITLE = ("The Executive&#8217;s 12-Question Materials Failure "
@@ -176,7 +197,7 @@ def nav(depth=0, active=""):
                 <li class="has-dropdown">
                     <button type="button" class="nav-trigger">About</button>
                     <ul class="dropdown">
-                        <li><a href="{up}about.html"{am}>{principal}</a></li>
+                        <li><a href="{up}about.html"{am}>{principal}<span class="dropdown-note">Principal &middot; credentials and approach</span></a></li>
                         <li><a href="{up}about.html#credentials">Credentials</a></li>
                         <li><a href="{up}about.html#approach">Approach</a></li>
                         <li><a href="{up}about.html#faqs">FAQs</a></li>
@@ -213,7 +234,7 @@ def footer(depth=0):
                         <span class="logo-icon">&#9670;</span>
                         Flaney<span class="logo-accent">Associates</span>
                     </a>
-                    <p>Independent materials-science and engineering expertise for manufacturers, product teams and attorneys. Led by {principal}, {letters}.</p>
+                    <p>Independent materials-science and engineering expertise for manufacturers, product teams and attorneys. Led by {principal}, {letters} &mdash; {role}.</p>
                     <div class="footer-social">
                         <a href="{linkedin}" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -255,7 +276,7 @@ def footer(depth=0):
             </div>
         </div>
     </footer>""".format(up=up, services=services, principal=PRINCIPAL,
-                        letters=LETTERS, linkedin=LINKEDIN,
+                        letters=LETTERS, role=ROLE, linkedin=LINKEDIN,
                         email=EMAIL_GENERAL, phone=PHONE_GENERAL,
                         phonetel=PHONE_GENERAL_TEL)
 
@@ -849,7 +870,7 @@ def build_about():
         '                    %s\n'
         '                </details>' % (q, a) for q, a in FAQS)
 
-    html = head("About %s, %s | Flaney Associates" % (PRINCIPAL, LETTERS),
+    html = head("About %s, %s | Flaney Associates" % (PRINCIPAL, LETTERS_FULL),
                 "Professor Joshua U. Otaigbe, PhD, CEng, FIMMM, CSci, FAEng, "
                 "FSPE — Founder and Principal Partner of Flaney Associates, "
                 "LLC, and Professor Emeritus of Polymer Science & Engineering.",
@@ -871,10 +892,10 @@ def build_about():
                     <div class="bio-mark">JO</div>
                     <h3>{principal}</h3>
                     <p class="bio-letters">{letters}</p>
-                    <p class="bio-post">Founder &amp; Principal Partner, Flaney Associates, LLC</p>
+                    <p class="bio-post">Founder &amp; Principal Partner, Flaney Associates, LLC<br>Professor Emeritus, The University of Southern Mississippi</p>
                     <ul>
-                        <li>Professor Emeritus of Polymer Science &amp; Engineering, The University of Southern Mississippi</li>
                         <li>PhD, polymer science and engineering, University of Manchester (UMIST), England, 1984</li>
+                        <li>Formerly Senior Project Leader and Engineer, Corning Incorporated</li>
                         <li>Registered Chartered Engineer and Chartered Scientist (UK)</li>
                         <li>7 patents &middot; 150+ refereed publications</li>
                     </ul>
@@ -929,7 +950,7 @@ def build_about():
 {faqs}
         </div>
     </section>
-""".format(principal=PRINCIPAL, letters=LETTERS, linkedin=LINKEDIN,
+""".format(principal=PRINCIPAL, letters=LETTERS_FULL, linkedin=LINKEDIN,
            creds=creds, appointments=appointments, faqs=faqs)
 
     html += closing_cta() + "\n"

@@ -279,9 +279,11 @@ def build():
                             spaceBefore=6, spaceAfter=16))
     story.append(Paragraph(
         "If the pattern points to independent review:", st['Contact']))
+    # The reader here is an operations or engineering executive, so the byline
+    # leads with the role and the three credentials they can actually read.
+    # The full academic record is on the About page.
     story.append(Paragraph(
-        "<b>Professor Joshua U. Otaigbe, PhD, CEng, FIMMM, CSci, FAEng, FSPE</b>",
-        st['Contact']))
+        "<b>Joshua U. Otaigbe, PhD, CEng, FIMMM</b>", st['Contact']))
     story.append(Paragraph(
         "Founder &amp; Principal Partner, Flaney Associates, LLC", st['Contact']))
     story.append(Spacer(1, 8))
