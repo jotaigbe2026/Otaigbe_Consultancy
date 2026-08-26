@@ -70,6 +70,23 @@ ROLE = "Founder &amp; Principal, Flaney Associates"
 LETTERS = "PhD, CEng, FIMMM"                     # client-facing
 LETTERS_FULL = "PhD, CEng, FIMMM, CSci, FAEng, FSPE"  # credentials in full
 
+HEADSHOT = "images/joshua-otaigbe.jpg"
+HEADSHOT_ALT = "Joshua U. Otaigbe, Founder and Principal of Flaney Associates"
+
+
+def headshot(depth=0, large=False):
+    """The principal's portrait inside the monogram circle.
+
+    The initials remain in the markup behind the image. `onerror` removes a
+    broken <img>, so a missing or unreachable file degrades to the monogram the
+    card used before the photo existed, rather than to a broken-image icon.
+    """
+    return ('<div class="bio-mark%s"><img src="%s%s" alt="%s" '
+            'onerror="this.remove()">JO</div>'
+            % (" bio-mark-lg" if large else "", "../" * depth, HEADSHOT,
+               HEADSHOT_ALT))
+
+
 CHECKLIST_PDF = "articles/materials-failure-cost-checklist.pdf"
 CHECKLIST_TITLE = ("The Executive&#8217;s 12-Question Materials Failure "
                    "&amp; Manufacturing Cost Checklist")
@@ -776,8 +793,19 @@ def service_aside(current):
             cur=' aria-current="page"' if slug == current else "")
         for slug, name, _ in SERVICE_NAV)
 
+    # Counsel retaining an expert is assessing how he will present, so the
+    # expert-witness page is the one service page that leads its rail with the
+    # person rather than the call to action.
+    person = ("""                <div class="aside-card" style="text-align:center">
+                    %s
+                    <h3 style="margin-top:14px">%s</h3>
+                    <p style="margin-bottom:0">%s<br>%s</p>
+                </div>
+""" % (headshot(depth=1), PRINCIPAL, LETTERS_FULL, ROLE)
+              if current == "expert-witness" else "")
+
     return """            <aside class="svc-aside">
-                <div class="aside-card aside-dark">
+""" + person + """                <div class="aside-card aside-dark">
                     <h3>Discuss Your Challenge</h3>
                     <p>Describe what is happening, what it is costing and what decision is waiting on it. You speak with the principal, not an account manager.</p>
                     <a href="../contact.html" class="btn btn-primary btn-full">Discuss Your Challenge</a>
@@ -897,7 +925,7 @@ def build_about():
         <div class="container">
             <div class="bio-layout">
                 <div class="bio-card">
-                    <div class="bio-mark">JO</div>
+                    {headshot}
                     <h3>{principal}</h3>
                     <p class="bio-letters">{letters}</p>
                     <p class="bio-post">Founder &amp; Principal, Flaney Associates, LLC<br>Professor Emeritus, The University of Southern Mississippi</p>
@@ -959,7 +987,8 @@ def build_about():
         </div>
     </section>
 """.format(principal=PRINCIPAL, letters=LETTERS_FULL, linkedin=LINKEDIN,
-           creds=creds, appointments=appointments, faqs=faqs)
+           creds=creds, appointments=appointments, faqs=faqs,
+           headshot=headshot(large=True))
 
     html += closing_cta() + "\n"
     html += footer() + "\n"

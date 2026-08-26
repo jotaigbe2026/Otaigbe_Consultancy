@@ -1935,3 +1935,42 @@ a.industry-card:hover h4 { color: var(--accent); }
 /* The band's label is the way into featured.html — the band itself sits two
    thirds of the way down the homepage, so it needs to lead somewhere. */
 a.featured-tag:hover { text-decoration: underline; }
+
+/* ===== PRINCIPAL HEADSHOT =====
+   The photo sits inside the existing .bio-mark circle rather than replacing
+   it. The initials stay in the markup underneath: if the image ever fails to
+   load, `onerror` removes the <img> and the monogram shows through, so the
+   card degrades to exactly what it looked like before the photo existed
+   instead of to a broken-image icon.
+
+   object-position is 20% rather than centre because the source is a 4:5
+   head-and-shoulders portrait — centring it would crop the top of his head.
+   Tuned by rendering the candidates; see CLAUDE.md. */
+.bio-mark {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.bio-mark img,
+.pl-mark img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    border-radius: 50%;
+}
+
+/* About gives it room: the page is about the person, so the portrait is the
+   first thing in the card rather than a token beside the name. */
+.bio-mark-lg {
+    width: 140px;
+    height: 140px;
+    font-size: 2.4rem;
+}
+
+@media (max-width: 768px) {
+    .bio-mark-lg { width: 112px; height: 112px; font-size: 2rem; }
+}

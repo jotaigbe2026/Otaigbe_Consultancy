@@ -172,6 +172,19 @@ It is kept separate from `generate_pdfs*.py` because those render the twelve sec
 
 The download gate itself is shared site-wide, and its markup is in all four chrome files, so its heading is adapted at runtime instead: a `.gated-download` button may carry `data-modal-heading` / `data-modal-subtitle` / `data-modal-submit`, which `applyModalCopy()` reads. Without it, clicking *Send Me the Checklist* opened a panel headed "Get Your Free Article".
 
+### The principal's headshot
+
+`images/joshua-otaigbe.jpg` — a 2019 studio portrait, downscaled to 700x875 and re-encoded at quality 82 (844 KB to 96 KB). The largest slot is a 140px circle, so 700px covers 2x retina with room spare.
+
+It appears in three places, all through `headshot()` in `generate_pages.py`: the About bio card at 140px (`.bio-mark-lg`), the homepage bio card at 62px, and the expert-witness rail at 62px — that page is the one service page whose sidebar leads with the person, because counsel retaining an expert is assessing how he will present. It is deliberately **not** in the 26px hero circle, where a face reads as a smudge, and not on the other five service pages, where it would become wallpaper.
+
+Two details worth keeping:
+
+- **The monogram is still in the markup, behind the image.** `onerror="this.remove()"` deletes a broken `<img>` so the card falls back to the "JO" circle it used before the photo existed, rather than to a broken-image icon.
+- **`object-position` is `center 20%`, not centre.** The source is a 4:5 head-and-shoulders portrait; centring the square crop cuts the top of his head off. 20% was chosen by rendering 0/10/20/30/50% side by side and comparing — reproduce that with PIL against `images/joshua-otaigbe.jpg` if the photo is ever replaced.
+
+**The photo is dated.** EXIF says 3 October 2019, and his appearance has changed since. It was accepted as the best of the two available: the alternative was current but in black tie, at 800x533, on a saturated green background that clashes with the navy palette. Replacing it is a single file drop at the same path — no code change.
+
 ### Page scripts
 
 | File | Loaded by | Holds |
