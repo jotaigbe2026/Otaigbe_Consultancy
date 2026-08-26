@@ -470,12 +470,13 @@ def head(title, description, depth=1, extra=""):
 {extra}    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{up}styles.css">
+    <link rel="stylesheet" href="{up}styles.css?v={sitev}">
     <link rel="stylesheet" href="{up}blog/blog.css?v={cssv}">
 </head>
 <body>
 """.format(title=title, desc=description, up=up, extra=extra,
-               cssv=asset_version("blog.css"))
+               cssv=asset_version("blog.css"),
+               sitev=asset_version("styles.css", base=ROOT))
 
 
 # ------------------------------------------------------------------- helpers

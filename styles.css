@@ -1261,8 +1261,26 @@ button.btn-download {
     background: none;
     border: 0;
     font: inherit;
-    color: inherit;
     padding: 0;
+    /* Buttons do not inherit the .nav-links a colour, and `inherit` here picks
+       up the near-black body text — invisible over the dark hero. Match the
+       sibling links explicitly instead, in every navbar state. */
+    color: rgba(255,255,255,0.85);
+    transition: color var(--transition);
+}
+
+.nav-trigger:hover,
+.has-dropdown.open > .nav-trigger {
+    color: #fff;
+}
+
+.navbar.scrolled .nav-trigger {
+    color: var(--text-light);
+}
+
+.navbar.scrolled .nav-trigger:hover,
+.navbar.scrolled .has-dropdown.open > .nav-trigger {
+    color: var(--primary-dark);
 }
 
 .nav-trigger::after {

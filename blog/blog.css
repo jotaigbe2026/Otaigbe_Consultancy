@@ -13,6 +13,9 @@
 
 .navbar.navbar-solid .logo { color: var(--primary-dark); }
 .navbar.navbar-solid .nav-links a { color: var(--text-light); }
+.navbar.navbar-solid .nav-trigger { color: var(--text-light); }
+.navbar.navbar-solid .nav-trigger:hover,
+.navbar.navbar-solid .has-dropdown.open > .nav-trigger { color: var(--primary-dark); }
 .navbar.navbar-solid .nav-links a:hover,
 .navbar.navbar-solid .nav-links a.active { color: var(--primary-dark); }
 .navbar.navbar-solid .btn-nav { color: #fff; }
