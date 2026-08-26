@@ -330,6 +330,7 @@ def nav(depth=1, solid=False):
                 <li class="has-dropdown">
                     <button type="button" class="nav-trigger">Insights</button>
                     <ul class="dropdown">
+                        <li><a href="{up}featured.html">Featured This Month<span class="dropdown-note">One article, chosen monthly</span></a></li>
                         <li><a href="{up}blog/index.html" class="active">Blog<span class="dropdown-note">Articles on materials and manufacturing</span></a></li>
                         <li><a href="{up}guides.html">Guides &amp; Briefings<span class="dropdown-note">Checklists and sector briefings</span></a></li>
                     </ul>
@@ -393,6 +394,7 @@ def footer(depth=1):
                         <li><a href="{up}about.html">About Professor Joshua U. Otaigbe</a></li>
                         <li><a href="{up}about.html#credentials">Credentials</a></li>
                         <li><a href="{up}industries.html">Industries</a></li>
+                        <li><a href="{up}featured.html">Featured This Month</a></li>
                         <li><a href="{up}blog/index.html">Blog</a></li>
                         <li><a href="{up}guides.html">Guides &amp; Briefings</a></li>
                     </ul>

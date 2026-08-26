@@ -168,6 +168,7 @@ def nav(depth=0, active=""):
                 <li class="has-dropdown">
                     <button type="button" class="nav-trigger">Insights</button>
                     <ul class="dropdown">
+                        <li><a href="{up}featured.html"{fm}>Featured This Month<span class="dropdown-note">One article, chosen monthly</span></a></li>
                         <li><a href="{up}blog/index.html">Blog<span class="dropdown-note">Articles on materials and manufacturing</span></a></li>
                         <li><a href="{up}guides.html"{gm}>Guides &amp; Briefings<span class="dropdown-note">Checklists and sector briefings</span></a></li>
                     </ul>
@@ -193,7 +194,8 @@ def nav(depth=0, active=""):
         </div>
     </nav>""".format(up=up, services=services, industries=industries,
                      principal=PRINCIPAL, gm=mark("guides"), am=mark("about"),
-                     cm=mark("contact"), lm=mark("attorney"))
+                     cm=mark("contact"), lm=mark("attorney"),
+                     fm=mark("featured"))
 
 
 def footer(depth=0):
@@ -233,6 +235,7 @@ def footer(depth=0):
                         <li><a href="{up}about.html">About {principal}</a></li>
                         <li><a href="{up}about.html#credentials">Credentials</a></li>
                         <li><a href="{up}industries.html">Industries</a></li>
+                        <li><a href="{up}featured.html">Featured This Month</a></li>
                         <li><a href="{up}blog/index.html">Blog</a></li>
                         <li><a href="{up}guides.html">Guides &amp; Briefings</a></li>
                     </ul>
@@ -1148,7 +1151,7 @@ def build_guides():
                  rewrites on the 1st. Ships hidden; revealed only once loaded. -->
             <div class="featured-band" id="featuredBand" data-src="content/featured/featured.json" hidden>
                 <div>
-                    <span class="featured-tag">Featured this month &middot; <span data-field="month"></span></span>
+                    <a class="featured-tag" href="featured.html">Featured this month &middot; <span data-field="month"></span> &rarr;</a>
                     <h3><a data-field="link" href="blog/index.html"><span data-field="title"></span></a></h3>
                     <p class="featured-excerpt" data-field="excerpt"></p>
                     <p class="featured-why" data-field="summary"></p>
@@ -1496,6 +1499,82 @@ def build_attorney():
     return html
 
 
+# ------------------------------------------------------ featured this month
+#
+# A real page, not just the band on the homepage. The band sits two thirds of
+# the way down index.html with nothing linking to it, which made the monthly
+# pick effectively invisible; this gives it a stable URL that can be linked
+# from a newsletter or a LinkedIn post and does not move as the homepage grows.
+#
+# The content is filled in by featured.js from content/featured/featured.json,
+# so the month's article changes without regenerating any HTML — the workflow
+# commits one JSON file and this page follows it.
+
+def build_featured():
+    html = head("Featured This Month | Flaney Associates",
+                "One article from the Flaney Associates archive, selected each "
+                "month for readers facing a materials, product-performance or "
+                "manufacturing decision.",
+                canonical="featured.html")
+    html += nav(active="featured") + "\n"
+    html += page_hero(
+        "Featured This Month",
+        "One article from the archive, chosen each month for readers facing a "
+        "materials, product-performance or manufacturing decision &mdash; with "
+        "a note on why it is worth your time.",
+        [("Home", "index.html"), ("Insights", None), ("Featured This Month", None)]) + "\n"
+
+    html += """    <section class="section">
+        <div class="container">
+            <div class="featured-page" id="featuredBand" data-src="content/featured/featured.json" hidden>
+                <span class="featured-tag">Featured this month &middot; <span data-field="month"></span></span>
+                <h2><a data-field="link" href="blog/index.html"><span data-field="title"></span></a></h2>
+                <p class="featured-excerpt" data-field="excerpt"></p>
+                <div class="featured-why-block">
+                    <h3>Why this one</h3>
+                    <p data-field="summary"></p>
+                </div>
+                <div class="featured-meta">
+                    <span>Published <span data-field="published"></span></span>
+                    <span data-field="themes"></span>
+                </div>
+                <div class="featured-actions">
+                    <a class="btn btn-primary btn-lg" data-field="link" href="blog/index.html">Read the article</a>
+                    <a class="btn btn-outline btn-lg" href="blog/index.html">Browse all articles</a>
+                </div>
+            </div>
+
+            <!-- Shown only if the JSON is missing or unreadable. On the homepage
+                 the band simply hides; a dedicated page cannot do that, because
+                 hiding everything would leave a blank page under a heading that
+                 promises an article. -->
+            <div class="featured-empty" id="featuredEmpty" hidden>
+                <h2>No featured article just yet</h2>
+                <p>This month&rsquo;s selection has not been published. The full archive is available in the meantime.</p>
+                <a href="blog/index.html" class="btn btn-primary btn-lg">Browse all articles</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-alt">
+        <div class="container">
+            <div class="prose" style="max-width:760px;margin:0 auto">
+                <h2>How this is chosen</h2>
+                <p>One article is selected on the first of each month from those published on this site that fall within the practice&rsquo;s material and manufacturing areas. The note above says which areas the article touches and which kind of engagement it relates to.</p>
+                <p>Nothing is removed from the archive when an article is featured, and past selections stay exactly where they were. If you are looking for something specific, the <a href="blog/index.html">full archive</a> is searchable by title and filterable by topic.</p>
+            </div>
+        </div>
+    </section>
+"""
+    html += closing_cta() + "\n"
+    html += footer() + "\n"
+    html += scripts()
+    html += ('    <script src="featured.js?v=%s"></script>\n'
+             % asset_version("featured.js"))
+    html += "</body>\n</html>\n"
+    return html
+
+
 # ------------------------------------------------------------------- main
 
 def main():
@@ -1505,6 +1584,7 @@ def main():
     write("about.html", build_about())
     write("industries.html", build_industries())
     write("guides.html", build_guides())
+    write("featured.html", build_featured())
     write("checklist.html", build_checklist())
     write("contact.html", build_contact())
     write("attorney-inquiry.html", build_attorney())
