@@ -285,7 +285,7 @@ def build():
     story.append(Paragraph(
         "<b>Joshua U. Otaigbe, PhD, CEng, FIMMM</b>", st['Contact']))
     story.append(Paragraph(
-        "Founder &amp; Principal Partner, Flaney Associates, LLC", st['Contact']))
+        "Founder &amp; Principal, Flaney Associates, LLC", st['Contact']))
     story.append(Spacer(1, 8))
     story.append(Paragraph(
         "Manufacturers and product teams: info@flaneyassociates.com "

@@ -58,7 +58,15 @@ LINKEDIN = ("https://www.linkedin.com/in/"
 # peer-elected and specific to materials.
 PRINCIPAL = "Joshua U. Otaigbe"                  # client-facing
 PRINCIPAL_ACADEMIC = "Professor Joshua U. Otaigbe"   # about + expert witness
-ROLE = "Principal, Flaney Associates"
+# "Founder" is the word doing the work: it says he owns this and built it,
+# which is the proof behind the direct-access positioning — a principal at a
+# large firm is still an employee. "Partner" was dropped because this is a solo
+# practice; partner implies partners, and an overstated structural title is a
+# free handle for opposing counsel in an expert-witness matter. "Consultant"
+# was dropped because it lowers the register beside PhD/CEng/FIMMM and hands
+# over the "you're a paid consultant" framing. The external network is still
+# described accurately as laboratory and university partners.
+ROLE = "Founder &amp; Principal, Flaney Associates"
 LETTERS = "PhD, CEng, FIMMM"                     # client-facing
 LETTERS_FULL = "PhD, CEng, FIMMM, CSci, FAEng, FSPE"  # credentials in full
 
@@ -197,7 +205,7 @@ def nav(depth=0, active=""):
                 <li class="has-dropdown">
                     <button type="button" class="nav-trigger">About</button>
                     <ul class="dropdown">
-                        <li><a href="{up}about.html"{am}>{principal}<span class="dropdown-note">Principal &middot; credentials and approach</span></a></li>
+                        <li><a href="{up}about.html"{am}>{principal}<span class="dropdown-note">Founder &amp; Principal &middot; credentials and approach</span></a></li>
                         <li><a href="{up}about.html#credentials">Credentials</a></li>
                         <li><a href="{up}about.html#approach">Approach</a></li>
                         <li><a href="{up}about.html#faqs">FAQs</a></li>
@@ -872,13 +880,13 @@ def build_about():
 
     html = head("About %s, %s | Flaney Associates" % (PRINCIPAL, LETTERS_FULL),
                 "Professor Joshua U. Otaigbe, PhD, CEng, FIMMM, CSci, FAEng, "
-                "FSPE — Founder and Principal Partner of Flaney Associates, "
+                "FSPE — Founder and Principal of Flaney Associates, "
                 "LLC, and Professor Emeritus of Polymer Science & Engineering.",
                 depth=0, canonical="about.html")
     html += nav(active="about") + "\n"
     html += page_hero(
         PRINCIPAL,
-        "Founder and Principal Partner of Flaney Associates, LLC. Professor "
+        "Founder and Principal of Flaney Associates, LLC. Professor "
         "Emeritus of Polymer Science &amp; Engineering. Forty years of "
         "materials science and engineering across industry and academia in "
         "North America, Europe and Africa.",
@@ -892,7 +900,7 @@ def build_about():
                     <div class="bio-mark">JO</div>
                     <h3>{principal}</h3>
                     <p class="bio-letters">{letters}</p>
-                    <p class="bio-post">Founder &amp; Principal Partner, Flaney Associates, LLC<br>Professor Emeritus, The University of Southern Mississippi</p>
+                    <p class="bio-post">Founder &amp; Principal, Flaney Associates, LLC<br>Professor Emeritus, The University of Southern Mississippi</p>
                     <ul>
                         <li>PhD, polymer science and engineering, University of Manchester (UMIST), England, 1984</li>
                         <li>Formerly Senior Project Leader and Engineer, Corning Incorporated</li>
@@ -903,7 +911,7 @@ def build_about():
                 </div>
                 <div class="prose">
                     <h2>Biography</h2>
-                    <p>I have had a professional career of more than forty years spanning the North American, European and African continents. I am the Founder and Principal Partner of Flaney Associates, LLC, a technical consulting company that provides value-added materials engineering solutions and innovations to industry, and I am Professor Emeritus of Polymer Science &amp; Engineering at The University of Southern Mississippi.</p>
+                    <p>I have had a professional career of more than forty years spanning the North American, European and African continents. I am the Founder and Principal of Flaney Associates, LLC, a technical consulting company that provides value-added materials engineering solutions and innovations to industry, and I am Professor Emeritus of Polymer Science &amp; Engineering at The University of Southern Mississippi.</p>
                     <p>I specialise in polymer engineering and materials science, and I have held senior appointments in both industry and academia &mdash; including Senior Project Leader and Engineer at Corning Incorporated, and the Fulbright-Tocqueville Distinguished Chair Professor in Engineering in France for 2013&ndash;2014, an appointment reserved for international scholars with substantial experience and publications in their fields.</p>
                     <p>I earned my PhD in polymer science and engineering from the University of Manchester (UMIST) in England in 1984. I joined The University of Southern Mississippi in 2002 as a professor of polymer engineering and science, following a career at Iowa State University as professor of chemical engineering and of materials science and engineering. From 2003 to 2012 I held invited visiting professorships at the Swiss Federal Institute of Technology (ETH Zurich) and at the Institut National des Sciences Appliqu&eacute;es (INSA) in Lyon, France, among other universities.</p>
                     <p>I hold seven patents and have authored more than 150 publications in refereed archival scientific and engineering journals and books. I am a registered Chartered Engineer, and my work is directed at translating strategic, value-added materials ideas into practice.</p>
