@@ -1832,3 +1832,50 @@ a.industry-card:hover { border-color: var(--accent); }
 a.industry-card:hover h4 { color: var(--accent); }
 
 .blog-cta { margin-top: 40px; }
+
+/* ===== FEATURED ARTICLE BAND =====
+   Filled in by featured.js from content/featured/featured.json. Ships with the
+   `hidden` attribute and is revealed only once real content lands in it, so a
+   missing or unreadable file leaves no trace on the page. */
+.featured-band[hidden] { display: none; }
+
+.featured-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 40px;
+    align-items: center;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    margin-bottom: 48px;
+}
+
+.featured-band .featured-tag {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.featured-band h3 { font-size: 1.32rem; line-height: 1.3; margin: 10px 0 12px; }
+.featured-band h3 a:hover { color: var(--accent); }
+
+.featured-band .featured-excerpt {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    border-left: 2px solid var(--border);
+    padding-left: 16px;
+}
+
+.featured-band .featured-why {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    margin-top: 14px;
+}
+
+@media (max-width: 900px) {
+    .featured-band { grid-template-columns: minmax(0, 1fr); gap: 24px; padding: 26px 24px; }
+}

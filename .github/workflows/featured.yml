@@ -1,0 +1,86 @@
+# Pick next month's featured article and commit it.
+#
+# Writes content/featured/featured.json and nothing else. blog/ is never
+# touched, so every post stays in the archive and the archive page is
+# unchanged — the job only decides which existing article the "Featured this
+# month" band points at.
+#
+# Run it by hand from the Actions tab (workflow_dispatch) to preview a month
+# without waiting; `dry_run: true` prints the pick without committing.
+
+name: Featured article of the month
+
+on:
+  schedule:
+    # 06:00 UTC on the 1st. GitHub's scheduler queues under load, so treat this
+    # as "some time on the 1st" rather than an exact minute.
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: 'Month to select for, "YYYY-MM". Blank = current month.'
+        required: false
+        type: string
+      dry_run:
+        description: "Print the pick without committing"
+        required: false
+        type: boolean
+        default: false
+
+# Least privilege: the job commits one file to the default branch and does
+# nothing else.
+permissions:
+  contents: write
+
+# A manual run started while the scheduled one is mid-flight would race on the
+# same file and the second push would be rejected.
+concurrency:
+  group: featured-article
+  cancel-in-progress: false
+
+jobs:
+  featured:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the site
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Show the next twelve months
+        # Cheap, and it makes the run log say what is coming rather than only
+        # what happened — useful when a pick looks surprising.
+        run: python3 generate_featured.py --all-months 12
+
+      - name: Select this month's article
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python3 generate_featured.py ${{ inputs.month && format('--month {0}', inputs.month) || '' }} --dry-run
+          else
+            python3 generate_featured.py ${{ inputs.month && format('--month {0}', inputs.month) || '' }}
+          fi
+
+      - name: Commit if it changed
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          set -euo pipefail
+          # Only ever stage the one file this job owns. `git add -A` here would
+          # sweep up anything else that happened to be in the tree.
+          git add content/featured/featured.json
+
+          if git diff --cached --quiet; then
+            echo "Same article as last run — nothing to commit."
+            exit 0
+          fi
+
+          TITLE=$(python3 -c "import json;print(json.load(open('content/featured/featured.json'))['title'])")
+          MONTH=$(python3 -c "import json;print(json.load(open('content/featured/featured.json'))['_meta']['month'])")
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Featured article for ${MONTH}: ${TITLE}"
+          git push

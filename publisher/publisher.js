@@ -1354,10 +1354,16 @@
         const css = html.match(/blog\.css(\?v=[a-z0-9]+)?/);
         const js = html.match(/blog\.js(\?v=[a-z0-9]+)?/);
         const lead = html.match(/lead-capture\.js(\?v=[a-z0-9]+)?/);
+        // styles.css is stamped too — head() in generate_blog.py appends
+        // asset_version("styles.css"), and a bundle written without it would be
+        // rewritten by the next Python run. Anchored on the slash so it cannot
+        // match publisher.css or any other *styles.css.
+        const site = html.match(/\/styles\.css(\?v=[a-z0-9]+)?/);
         return {
             css: (css && css[1]) || '',
             js: (js && js[1]) || '',
-            lead: (lead && lead[1]) || ''
+            lead: (lead && lead[1]) || '',
+            site: (site && site[1]) || ''
         };
     }
 

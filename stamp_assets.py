@@ -35,7 +35,7 @@ PAGES = [
      r'(publisher\.css|publisher\.js|lib/[a-z0-9_-]+\.js)'),
     (os.path.join(ROOT, "index.html"),
      ROOT,
-     r'(styles\.css|script\.js|nav\.js|lead-capture\.js)'),
+     r'(styles\.css|script\.js|nav\.js|featured\.js|lead-capture\.js)'),
 ]
 
 

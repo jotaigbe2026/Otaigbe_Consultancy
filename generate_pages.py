@@ -1143,6 +1143,20 @@ def build_guides():
 
     html += """    <section class="section">
         <div class="container">
+            <!-- Featured article of the month. Filled in by featured.js from
+                 content/featured/featured.json, which .github/workflows/featured.yml
+                 rewrites on the 1st. Ships hidden; revealed only once loaded. -->
+            <div class="featured-band" id="featuredBand" data-src="content/featured/featured.json" hidden>
+                <div>
+                    <span class="featured-tag">Featured this month &middot; <span data-field="month"></span></span>
+                    <h3><a data-field="link" href="blog/index.html"><span data-field="title"></span></a></h3>
+                    <p class="featured-excerpt" data-field="excerpt"></p>
+                    <p class="featured-why" data-field="summary"></p>
+                </div>
+                <div>
+                    <a class="btn btn-primary btn-full" data-field="link" href="blog/index.html">Read the article</a>
+                </div>
+            </div>
             <div class="magnet">
                 <div>
                     <span class="audience-tag" style="color:var(--accent)">Featured guide</span>
@@ -1192,6 +1206,8 @@ def build_guides():
     html += footer() + "\n"
     html += download_modal() + "\n"
     html += scripts()
+    html += ('    <script src="featured.js?v=%s"></script>\n'
+             % asset_version("featured.js"))
     html += "</body>\n</html>\n"
     return html
 
