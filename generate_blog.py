@@ -25,7 +25,17 @@ import stamp_assets
 ROOT = os.path.dirname(os.path.abspath(__file__))
 BLOG = os.path.join(ROOT, "blog")
 DATA = os.path.join(BLOG, "data", "posts.json")
+# The retired WordPress origin. This is NOT a site base URL: its only job is
+# resolving the protocol-relative and root-relative image paths that came back
+# in the imported post bodies (see resolve() below). It must not be merged with
+# BASE_URL — that one follows the domain move, this one is frozen history.
 SOURCE_SITE = "https://flaneyassociates.com"
+
+# The canonical origin of this site, and the single place it is written down.
+# Three Python generators and publisher.js all read site.json, so moving the
+# domain is a one-line edit there rather than four edits across four files.
+with open(os.path.join(ROOT, "site.json")) as _f:
+    BASE_URL = json.load(_f)["base_url"]
 
 # ---------------------------------------------------------------- sanitising
 
@@ -672,7 +682,12 @@ def build_post(p, posts):
     <meta property="og:description" content="{d}">
     <meta property="article:published_time" content="{pub}">
 {img}    <link rel="canonical" href="{canon}">
-""".format(t=attr(p["title"]), d=desc, pub=p["date"], canon=p["link"],
+""".format(t=attr(p["title"]), d=desc, pub=p["date"],
+           # Self-referential. This used to echo p["link"], the URL the
+           # WordPress API reported, which pointed at a site now being retired —
+           # so 19 of the 20 article pages were telling search engines that the
+           # authoritative copy lived somewhere that will stop resolving.
+           canon="%s/blog/%s.html" % (BASE_URL, p["slug"]),
            img=('    <meta property="og:image" content="%s">\n' % p["image"]) if p["image"] else "")
 
     html = head("%s | Flaney Associates" % strip_tags(p["title"]), desc, depth=1, extra=og)

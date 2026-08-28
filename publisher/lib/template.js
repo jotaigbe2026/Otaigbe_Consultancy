@@ -10,7 +10,30 @@
 window.FlaneyTemplate = (function () {
     'use strict';
 
-    const SITE = 'https://jotaigbe2026.github.io/Flaney_Associates';
+    /* The site's canonical origin, supplied by publisher.js from site.json —
+       the same file the three Python generators read, so the two renderers
+       cannot disagree about it.
+
+       Deliberately null rather than a hardcoded default. A default would have
+       to be kept in step with site.json by hand, which is the drift this whole
+       change removes: if the domain moved and only site.json were updated, a
+       failed fetch would quietly stamp the old origin into a publish bundle
+       that then gets committed. Failing loudly is the cheaper mistake, so
+       article() throws instead. boot() resolves this before anything renders —
+       site.json sits in the same Promise.all as posts.json. */
+    let SITE = null;
+
+    function setSite(baseUrl) {
+        if (!baseUrl) throw new Error('setSite() needs a base URL from site.json');
+        SITE = String(baseUrl).replace(/\/+$/, '');
+    }
+
+    function siteOrThrow() {
+        if (!SITE) throw new Error(
+            'template.js: base URL not set — call setSite() with site.json\'s ' +
+            'base_url before rendering, or the canonical URL would be wrong.');
+        return SITE;
+    }
 
     // -------------------------------------------------------------- utilities
 
@@ -687,7 +710,9 @@ ${extra || ''}    <link rel="preconnect" href="https://fonts.googleapis.com">
             ? post.categories : ['Materials Engineering'];
         const desc = (post.summary || summarise(post.content, stripTags(post.title), 300))
             .replace(/"/g, '&quot;');
-        const canonical = post.link || (SITE + '/blog/' + post.slug + '.html');
+        // Self-referential. This used to prefer post.link — the URL the
+        // WordPress API reported — which pointed at a site being retired.
+        const canonical = siteOrThrow() + '/blog/' + post.slug + '.html';
 
         const og = `    <meta property="og:type" content="article">
     <meta property="og:title" content="${attr(post.title)}">
@@ -923,7 +948,7 @@ ${chips.map(c => '                ' + c).join('\n')}
     }
 
     return {
-        SITE: SITE,
+        setSite, get SITE() { return SITE; },
         slugify, fmtDate, parseDate, readTime, countWords, stripTags, attr, esc, searchKey,
         parseBody, toBlocks, summarise, card, article, archive, homepage,
         pickRelated, downloadModal

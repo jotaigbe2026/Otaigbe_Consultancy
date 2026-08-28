@@ -1373,8 +1373,13 @@
             fresh('../blog/index.html').then(r => r.text()),
             fresh('../index.html').then(r => r.text()),
             // Optional: the dashboard still works on localStorage alone.
-            fresh('template.json').then(r => r.ok ? r.json() : {}).catch(() => ({}))
+            fresh('template.json').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+            // Required, unlike template.json: a missing base URL would put the
+            // wrong canonical into every article page this dashboard writes.
+            // Same barrier as posts.json, so nothing renders before it lands.
+            fresh('../site.json').then(r => r.json())
         ]).then(function (results) {
+            T.setSite(results[4].base_url);
             state.posts = results[0];
             state.assets = readAssetVersions(results[1]);
             state.homepageHTML = results[2];

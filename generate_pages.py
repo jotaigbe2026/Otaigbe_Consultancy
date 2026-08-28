@@ -19,12 +19,15 @@ generate_blog.py and publisher/lib/template.js. Changing one means changing all
 four. See CLAUDE.md, "Site chrome lives in four places".
 """
 
+import json
 import os
 import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-SITE = "https://jotaigbe2026.github.io/Flaney_Associates"
+# Read from site.json rather than hardcoded, so the domain move is one edit.
+with open(os.path.join(ROOT, "site.json")) as _f:
+    SITE = json.load(_f)["base_url"]
 
 # Two inboxes, deliberately. The general address is a shared mailbox and is what
 # the site has always used; the principal's address is for the attorney conflict

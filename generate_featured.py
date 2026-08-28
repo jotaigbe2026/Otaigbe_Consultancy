@@ -30,7 +30,9 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, "blog", "data", "posts.json")
 OUT = os.path.join(ROOT, "content", "featured", "featured.json")
-BASE_URL = "https://jotaigbe2026.github.io/Flaney_Associates"
+# Read from site.json rather than hardcoded, so the domain move is one edit.
+with open(os.path.join(ROOT, "site.json")) as _f:
+    BASE_URL = json.load(_f)["base_url"]
 
 MAX_EXCERPT_WORDS = 40
 
