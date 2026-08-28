@@ -237,6 +237,15 @@ def _tidy_summary(text, title):
     return re.sub(r"\(\s+|\s+\)", lambda m: m.group(0).strip(), text).strip()
 
 
+# The Simple Membership plugin served this in place of an abstract on a couple
+# of gated posts, and the API returned it as the excerpt. It is not a summary:
+# it was indexed into the card's data-title, so searching the archive for
+# "member" or "logged" surfaced those posts. summarise() returns "" for it and
+# card() then omits the <p> entirely, which also leaves data-title as the title
+# alone. Two posts are affected today; the guard covers any future one.
+LOGIN_WALL = re.compile(r"logged in to view|not a member|please log in", re.I)
+
+
 def summarise(p, limit=260):
     """A clean one-paragraph summary for cards and meta descriptions.
 
@@ -253,7 +262,7 @@ def summarise(p, limit=260):
     available it is the only trustworthy summary. Gated posts have no body, so
     their published abstract is used as-is once cleaned.
     """
-    if p.get("summary"):
+    if p.get("summary") and not LOGIN_WALL.search(p["summary"]):
         return p["summary"]
 
     title = strip_tags(p["title"])
@@ -268,6 +277,14 @@ def summarise(p, limit=260):
 
     if len(text) > limit:
         text = text[:limit - 1].rsplit(" ", 1)[0].rstrip(",;:.") + "…"
+
+    # The login wall reaches this point by two routes — the stored summary and
+    # the WordPress excerpt carry the same string — so it is rejected at the
+    # exit rather than at each source. Returning "" also keeps this in step
+    # with template.js, whose summarise() only ever sees the (empty) body of a
+    # gated post and so returns "" here regardless.
+    if LOGIN_WALL.search(text):
+        return ""
     return text
 
 
@@ -509,25 +526,35 @@ def card(p, prefix=""):
     excerpt = summarise(p)
 
     if p["gated"]:
-        href = p["link"]
-        link_attrs = ' target="_blank" rel="noopener"'
-        action = ('<a class="card-link" href="%s"%s>Read on flaneyassociates.com &rarr;</a>'
-                  % (href, link_attrs))
-        badge = '<span class="post-badge post-badge-locked">&#128274; Members only</span>'
+        # The source site is being retired, so these no longer link anywhere.
+        # The thumbnail and title become inert — .post-thumb and .post-card h3
+        # are styled by class, not by tag, so dropping the <a> changes nothing
+        # visually. The paper itself is supplied on request.
+        contact = "contact.html" if prefix else "../contact.html"
+        thumb = '<div class="post-thumb">%s</div>' % media
+        heading = "<h3>%s</h3>" % p["title"]
+        action = '<a class="card-link" href="%s">Request a copy &rarr;</a>' % contact
+        badge = ('<span class="post-badge post-badge-locked">'
+                 "&#128196; PDF on request</span>")
         meta_extra = ""
     else:
         href = "%s%s.html" % (prefix, p["slug"])
-        link_attrs = ""
+        thumb = '<a class="post-thumb" href="%s">%s</a>' % (href, media)
+        heading = '<h3><a href="%s">%s</a></h3>' % (href, p["title"])
         action = '<a class="card-link" href="%s">Read full article &rarr;</a>' % href
         badge = ""
         meta_extra = '<span class="blog-read">%d min read</span>' % read_time(p["words"])
 
+    # Two gated posts have no abstract at all — see LOGIN_WALL. An empty <p>
+    # would leave a gap the card's spacing was not designed for, so the element
+    # is omitted rather than rendered blank.
+    summary_el = ("\n                        <p>%s</p>" % excerpt) if excerpt else ""
+
     return """                <article class="post-card" data-title="{search}" data-cats="{catattr}" data-publish="{publish}">
-                    <a class="post-thumb" href="{href}"{la}>{media}</a>
+                    {thumb}
                     <div class="post-body">
                         <div class="post-cats">{cats}{badge}</div>
-                        <h3><a href="{href}"{la}>{title}</a></h3>
-                        <p>{excerpt}</p>
+                        {heading}{summary_el}
                         <div class="blog-meta">
                             <span class="blog-date">{date}</span>
                             {meta_extra}
@@ -536,11 +563,11 @@ def card(p, prefix=""):
                     </div>
                 </article>
 """.format(
-        search=search_key(p["title"] + " " + excerpt),
+        search=search_key((p["title"] + " " + excerpt).strip()),
         catattr=attr("|".join(cats)), publish=p["date"][:10],
-        href=href, la=link_attrs, media=media,
+        thumb=thumb, heading=heading, summary_el=summary_el,
         cats="".join('<span class="blog-category">%s</span>' % c for c in cats),
-        badge=badge, title=p["title"], excerpt=excerpt,
+        badge=badge,
         date=fmt_date(p["date"]), meta_extra=meta_extra, action=action)
 
 
@@ -573,7 +600,7 @@ def build_index(posts):
             <p class="blog-hero-sub">{total} articles and publications on materials engineering — polymers and composites, nanotechnology, sustainable materials, protective coatings, and the growing role of AI in materials discovery.</p>
             <div class="blog-hero-stats">
                 <div class="stat"><span class="stat-number" data-total="{total}">{total}</span><span class="stat-label">Articles</span></div>
-                <div class="stat"><span class="stat-number">{full}</span><span class="stat-label">Full text here</span></div>
+                <div class="stat"><span class="stat-number">{full}</span><span class="stat-label">Read online</span></div>
                 <div class="stat"><span class="stat-number">{cats}</span><span class="stat-label">Topics</span></div>
             </div>
         </div>
@@ -605,7 +632,7 @@ def build_index(posts):
 
             <div class="archive-note">
                 <h4>About this archive</h4>
-                <p>Articles marked <strong>&#128274; Members only</strong> are published behind the membership area on <a href="https://flaneyassociates.com" target="_blank" rel="noopener">flaneyassociates.com</a>. Their titles, dates and abstracts are shown here; follow the link to read the full text or download the paper.</p>
+                <p>Articles marked <strong>&#128196; PDF on request</strong> are published papers and trade articles. They are listed here by title, date and abstract; the full text and a PDF copy are available on request. <a href="../contact.html">Ask for a copy</a> and name the article you want.</p>
             </div>
         </div>
     </main>

@@ -430,6 +430,12 @@ window.FlaneyTemplate = (function () {
         return blocks;
     }
 
+    /* Mirrors LOGIN_WALL in generate_blog.py. The Simple Membership plugin
+       served this instead of an abstract on a couple of gated posts, and the
+       API stored it as the excerpt. It was indexed into the card's data-title,
+       so an archive search for "member" or "logged" surfaced them. */
+    const LOGIN_WALL = /logged in to view|not a member|please log in/i;
+
     /* First real paragraph, trimmed to a card-sized summary. Mirrors summarise(). */
     function summarise(html, title, limit) {
         limit = limit || 260;
@@ -632,29 +638,38 @@ ${extra || ''}    <link rel="preconnect" href="https://fonts.googleapis.com">
 
         const cats = (post.categories && post.categories.length)
             ? post.categories : ['Materials Engineering'];
-        const excerpt = post.summary || summarise(post.content, stripTags(post.title));
+        const stored = (post.summary && !LOGIN_WALL.test(post.summary)) ? post.summary : '';
+        const excerpt = stored || summarise(post.content, stripTags(post.title));
 
-        let href, linkAttrs, action, badge, metaExtra;
+        let thumb, heading, action, badge, metaExtra;
         if (post.gated) {
-            href = post.link;
-            linkAttrs = ' target="_blank" rel="noopener"';
-            action = `<a class="card-link" href="${href}"${linkAttrs}>Read on flaneyassociates.com &rarr;</a>`;
-            badge = '<span class="post-badge post-badge-locked">&#128274; Members only</span>';
+            // The source site is being retired, so these no longer link
+            // anywhere. .post-thumb and .post-card h3 are styled by class, not
+            // by tag, so dropping the <a> changes nothing visually.
+            const contact = prefix ? 'contact.html' : '../contact.html';
+            thumb = `<div class="post-thumb">${media}</div>`;
+            heading = `<h3>${post.title}</h3>`;
+            action = `<a class="card-link" href="${contact}">Request a copy &rarr;</a>`;
+            badge = '<span class="post-badge post-badge-locked">&#128196; PDF on request</span>';
             metaExtra = '';
         } else {
-            href = prefix + post.slug + '.html';
-            linkAttrs = '';
+            const href = prefix + post.slug + '.html';
+            thumb = `<a class="post-thumb" href="${href}">${media}</a>`;
+            heading = `<h3><a href="${href}">${post.title}</a></h3>`;
             action = `<a class="card-link" href="${href}">Read full article &rarr;</a>`;
             badge = '';
             metaExtra = `<span class="blog-read">${readTime(post.words)} min read</span>`;
         }
 
-        return `                <article class="post-card" data-title="${searchKey(post.title + ' ' + excerpt)}" data-cats="${attr(cats.join('|'))}" data-publish="${String(post.date).slice(0, 10)}">
-                    <a class="post-thumb" href="${href}"${linkAttrs}>${media}</a>
+        // Two gated posts have no abstract at all. An empty <p> would leave a
+        // gap the card's spacing was not designed for, so it is omitted.
+        const summaryEl = excerpt ? `\n                        <p>${excerpt}</p>` : '';
+
+        return `                <article class="post-card" data-title="${searchKey((post.title + ' ' + excerpt).trim())}" data-cats="${attr(cats.join('|'))}" data-publish="${String(post.date).slice(0, 10)}">
+                    ${thumb}
                     <div class="post-body">
                         <div class="post-cats">${cats.map(c => `<span class="blog-category">${c}</span>`).join('')}${badge}</div>
-                        <h3><a href="${href}"${linkAttrs}>${post.title}</a></h3>
-                        <p>${excerpt}</p>
+                        ${heading}${summaryEl}
                         <div class="blog-meta">
                             <span class="blog-date">${fmtDate(post.date)}</span>
                             ${metaExtra}
@@ -809,7 +824,7 @@ ${post.content}
             <p class="blog-hero-sub">${posts.length} articles and publications on materials engineering — polymers and composites, nanotechnology, sustainable materials, protective coatings, and the growing role of AI in materials discovery.</p>
             <div class="blog-hero-stats">
                 <div class="stat"><span class="stat-number" data-total="${posts.length}">${posts.length}</span><span class="stat-label">Articles</span></div>
-                <div class="stat"><span class="stat-number">${full.length}</span><span class="stat-label">Full text here</span></div>
+                <div class="stat"><span class="stat-number">${full.length}</span><span class="stat-label">Read online</span></div>
                 <div class="stat"><span class="stat-number">${allCats.length}</span><span class="stat-label">Topics</span></div>
             </div>
         </div>
@@ -838,7 +853,7 @@ ${chips.map(c => '                ' + c).join('\n')}
 
             <div class="archive-note">
                 <h4>About this archive</h4>
-                <p>Articles marked <strong>&#128274; Members only</strong> are published behind the membership area on <a href="https://flaneyassociates.com" target="_blank" rel="noopener">flaneyassociates.com</a>. Their titles, dates and abstracts are shown here; follow the link to read the full text or download the paper.</p>
+                <p>Articles marked <strong>&#128196; PDF on request</strong> are published papers and trade articles. They are listed here by title, date and abstract; the full text and a PDF copy are available on request. <a href="../contact.html">Ask for a copy</a> and name the article you want.</p>
             </div>
         </div>
     </main>
