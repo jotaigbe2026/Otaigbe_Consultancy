@@ -1,11 +1,11 @@
 {
-  "title": "Building for the Future: Carbon-Storing Materials that Fight Climate Change",
-  "slug": "building-for-the-future-carbon-storing-materials-that-fight-climate-change",
-  "url": "https://jotaigbe2026.github.io/Flaney_Associates/blog/building-for-the-future-carbon-storing-materials-that-fight-climate-change.html",
-  "summary": "This article sits in advanced materials engineering and sustainable materials technology, which are among the material and manufacturing areas this practice works in directly. It speaks to materials selection, product development and technical due diligence, so it reaches readers already facing the kind of decision Flaney Associates is engaged to support. Selected for August 2026 from 16 eligible on-site articles.",
-  "highlight_excerpt": "The buildings we live and work in are often silent contributors to climate change. Traditional construction materials like concrete and steel release large amounts of carbon dioxide (CO₂) during production. In fact, the construction sector is responsible for nearly 40%…",
+  "title": "Sustainable Solutions: Materials for a Greener Tomorrow",
+  "slug": "sustainable-solutions-materials-for-a-greener-tomorrow",
+  "url": "https://jotaigbe2026.github.io/Flaney_Associates/blog/sustainable-solutions-materials-for-a-greener-tomorrow.html",
+  "summary": "This article sits in advanced materials engineering and sustainable materials technology, which are among the material and manufacturing areas this practice works in directly. It speaks to materials selection, product development and technical due diligence, so it reaches readers already facing the kind of decision Flaney Associates is engaged to support. Selected for September 2026 from 16 eligible on-site articles.",
+  "highlight_excerpt": "Reimagining Our Material World In today’s climate-conscious world, the materials we use in everyday products are being transformed through innovation and thoughtful design. This transformation isn’t just about recycling—it’s about fundamentally rethinking how materials are created, used, and reused across…",
   "_meta": {
-    "month": "2026-08",
+    "month": "2026-09",
     "pool_size": 16,
     "matched_categories": [
       "Advanced Materials Engineering",
@@ -16,7 +16,7 @@
       "product development",
       "technical due diligence"
     ],
-    "published": "2026-01-23",
+    "published": "2025-05-09",
     "selection": "sha256 rendezvous hash of month|slug, lowest wins"
   }
 }
